@@ -1,46 +1,68 @@
 <?php
 require_once 'config.php';
 
-$name = $address = $salary ="";
-$name_err = $address_err = $salary_err ="";
+$title = $createAt = $description = $content = $avt = $views = $author ="";
+$title_err = $createAt_err = $description_err = $content_err = $avt_err = $views_err = $author_err ="";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
-    $input_name = trim($_POST["name"]);
-    if (empty($input_name)){
-        $name_err = "Please enter a name.";
-    } elseif (!filter_var(trim($_POST['name']),FILTER_VALIDATE_REGEXP,
-        array("options"=>array("regexp"=>"/^{a-zA-Z'-.\s ]+$/")))){
-        $name_err = 'Please enter a valid name.';
+// Title Input
+    $input_title = trim($_POST["title"]);
+    if (empty($input_title)){
+        $title_err = "Please enter a title.";
     } else{
-        $name = $input_name;
+        $title = $input_title;
+    }
+// createAt Input
+    $input_createAt = trim($_POST["createAt"]);
+    if (empty($input_createAt)){
+        $createAt_err = "Please enter a createAt.";
+    } else{
+        $createAt = $input_createAt;
+    }
+// description Input
+    $input_description = trim($_POST["description"]);
+    if (empty($input_description)){
+        $description_err = "Please enter a description.";
+    } else{
+        $description = $input_description;
+    }
+// content Input
+    $input_content = trim($_POST["content"]);
+    if (empty($input_content)){
+        $content_err = "Please enter a content.";
+    } else{
+        $content = $input_content;
+    }
+//    views Input
+    $input_views = trim($_POST["views"]);
+    if (empty($input_views)){
+        $views_err = "Please enter the views news.";
+    } elseif (!ctype_digit($input_views)){
+        $views_err = 'Please enter a positive integer value.';
+    } else{
+        $views = $input_views;
+    }
+// author Input
+    $input_author = trim($_POST["author"]);
+    if (empty($input_author)){
+        $author_err = "Please enter a author.";
+    } else{
+        $author = $input_author;
     }
 
-    $input_address = trim($_POST["address"]);
-    if (empty($input_address)){
-        $address_err = "Please enter a address.";
-    } else{
-        $address = $input_address;
-    }
+    if (empty($title_err) && empty($createAt_err) && empty($description_err) && empty($content_err) && empty($avt_err) && empty($views_err) && empty($author_err)){
+        $sql = "INSERT INTO employees (title, createAt, descriptions, content, avt, views, author) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-    $input_salary = trim($_POST["salary"]);
-    if (empty($input_salary)){
-        $salary_err = "Please enter the salary amount.";
-    } elseif (!ctype_digit($input_salary)){
-        $salary_err = 'Please enter a positive integer value.';
-    } else{
-        $salary = $input_salary;
-    }
+        if ($stmt = mysqli_prepare($connection, $sql)){
+            mysqli_stmt_bind_param($stmt, "sss", $param_title, $param_createAt, $param_descriptions, $param_content, $param_avt, $param_views, $param_author);
 
-    if (empty($name_err) && empty($address_err) && empty($salary_err)){
-        $sql = "INSERT INTO employees (name, address, salary) VALUES (?, ?, ?)";
-
-        $link ='';
-        if ($stmt = mysqli_prepare($link, $sql)){
-            mysqli_stmt_bind_param($stmt, "sss", $param_name, $param_address, $param_salary);
-
-            $param_name = $name;
-            $param_address = $address;
-            $param_salary = $salary;
+            $param_title = $title;
+            $param_createAt = $createAt;
+            $param_descriptions = $description;
+            $param_content = $content;
+            $param_avt = $avt;
+            $param_views = $views;
+            $param_author = $author;
 
             if (mysqli_stmt_execute($stmt)){
                 header("location: index.php");
@@ -75,22 +97,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                 <div class="page-header">
                     <h2>Create Record</h2>
                 </div>
-                <p>Please fill this form and submit to add employee record to the database.</p>
+                <p>Please fill this form and submit to add news record to the database.</p>
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP SELF"]); ?>" method="post">
-                    <div class="form-group <?php echo (!empty($name_err))? 'has-error' : '';?>">
-                        <label>Name</label>
-                        <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
-                        <span class="help-block"><?php echo $name_err;?></span>
+                    <div class="form-group <?php echo (!empty($title_err))? 'has-error' : '';?>">
+                        <label>Title</label>
+                        <input type="text" name="title" class="form-control" value="<?php echo $title; ?>">
+                        <span class="help-block"><?php echo $title_err;?></span>
                     </div>
-                    <div class="form-group <?php echo (!empty($address_err))? 'has-error' : '';?>">
-                        <label>Address</label>
-                        <input type="text" name="address" class="form-control" value="<?php echo $address; ?>">
-                        <span class="help-block"><?php echo $address_err;?></span>
+                    <div class="form-group <?php echo (!empty($createAt_err))? 'has-error' : '';?>">
+                        <label>CreateAt</label>
+                        <input type="text" name="createAt" class="form-control" value="<?php echo $createAt; ?>">
+                        <span class="help-block"><?php echo $createAt_err;?></span>
                     </div>
-                    <div class="form-group <?php echo (!empty($salary_err))? 'has-error' : '';?>">
-                        <label>Salary</label>
-                        <input type="text" name="salary" class="form-control" value="<?php echo $salary; ?>">
-                        <span class="help-block"><?php echo $salary_err;?></span>
+                    <div class="form-group <?php echo (!empty($description_err))? 'has-error' : '';?>">
+                        <label>Descriptions</label>
+                        <input type="text" name="descriptions" class="form-control" value="<?php echo $description; ?>">
+                        <span class="help-block"><?php echo $description_err;?></span>
+                    </div>
+                    <div class="form-group <?php echo (!empty($content_err))? 'has-error' : '';?>">
+                        <label>Content</label>
+                        <input type="text" name="content" class="form-control" value="<?php echo $content; ?>">
+                        <span class="help-block"><?php echo $content_err;?></span>
+                    </div>
+                    <div class="form-group <?php echo (!empty($avt_err))? 'has-error' : '';?>">
+                        <label>Avt</label>
+                        <input type="text" name="avt" class="form-control" value="<?php echo $avt; ?>">
+                        <span class="help-block"><?php echo $avt_err;?></span>
+                    </div>
+                    <div class="form-group <?php echo (!empty($views_err))? 'has-error' : '';?>">
+                        <label>Views</label>
+                        <input type="text" name="views" class="form-control" value="<?php echo $views; ?>">
+                        <span class="help-block"><?php echo $views_err;?></span>
+                    </div>
+                    <div class="form-group <?php echo (!empty($author_err))? 'has-error' : '';?>">
+                        <label>Author</label>
+                        <input type="text" name="author" class="form-control" value="<?php echo $author; ?>">
+                        <span class="help-block"><?php echo $author_err;?></span>
                     </div>
                     <input type="submit" class="btn btn-primary" value="Submit">
                     <a href="index.php" class="btn btn-default">Cancel</a>

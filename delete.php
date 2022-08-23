@@ -1,11 +1,12 @@
+
 <?php
 
 if (isset($_POST["id"]) && !empty($_POST["id"])){
     require_once 'config.php';
 
-    $sql = "DELETE FROM employees WHERE id=?";
+    $sql = "DELETE FROM news WHERE id=?";
 
-    if ($stmt = mysqli_prepare($link, $sql)){
+    if ($stmt = mysqli_prepare($connection, $sql)){
         mysqli_stmt_bind_param($stmt, "i", $param_id);
 
         $param_id = trim($_POST["id"]);
@@ -18,7 +19,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])){
         }
     }
     mysqli_stmt_close($stmt);
-    mysqli_close($link);
+    mysqli_close($connection);
 } else {
     if (empty(trim($_GET["id"]))){
         header("location: error.php");
